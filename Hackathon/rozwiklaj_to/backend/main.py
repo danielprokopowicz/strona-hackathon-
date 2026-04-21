@@ -150,5 +150,11 @@ if os.path.exists(static_dir):
 else:
     print("Ostrzeżenie: Nie znaleziono folderu static!")
 @app.get("/")
-def serve_index():
-    return FileResponse(str(frontend_path / "index.html"))
+def read_root():
+    # Szukamy index.html w tym samym folderze co main.py
+    html_path = os.path.join(BASE_DIR, "index.html")
+    
+    if os.path.exists(html_path):
+        return FileResponse(html_path)
+    else:
+        return {"error": "Nie znaleziono pliku index.html!"}
