@@ -138,8 +138,17 @@ def generate_story(req: GenerateRequest):
         raise HTTPException(status_code=500, detail="Nie udało się wygenerować historii. Spróbuj ponownie.")
 
 frontend_path = Path(__file__).parent.parent / "frontend"
-app.mount("/static", StaticFiles(directory=str(frontend_path / "static")), name="static")
+import os
+from fastapi.staticfiles import StaticFiles
 
+# Bezpieczne pobranie ścieżki do folderu, w którym znajduje się main.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+static_dir = os.path.join(BASE_DIR, "static") # Szuka folderu static tuż obok main.py
+
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+else:
+    print("Ostrzeżenie: Nie znaleziono folderu static!")
 @app.get("/")
 def serve_index():
     return FileResponse(str(frontend_path / "index.html"))
